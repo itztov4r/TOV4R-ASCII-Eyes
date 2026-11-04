@@ -3,9 +3,10 @@ const canvas=document.querySelector('#art'),ctx=canvas.getContext('2d');
 const source=document.createElement('canvas');source.width=1000;source.height=430;
 const brush=source.getContext('2d',{willReadFrequently:true});
 const screen=document.querySelector('#screen');
+let dirty=true;
 let width=0,height=0,dpr=1,color='#eac6a9',paused=false,elapsed=0,previous=0,lastPaint=0,forcedBlink=-10,pointerUntil=0,pointerX=0,pointerY=0;
 const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
-function resize(){const r=canvas.getBoundingClientRect();width=r.width;height=r.height;dpr=Math.min(devicePixelRatio||1,2);canvas.width=Math.round(width*dpr);canvas.height=Math.round(height*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);}
+function resize(){dirty=true;const r=canvas.getBoundingClientRect();width=r.width;height=r.height;dpr=Math.min(devicePixelRatio||1,2);canvas.width=Math.round(width*dpr);canvas.height=Math.round(height*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);}
 new ResizeObserver(resize).observe(screen);
 function stroke(path,alpha,lineWidth){brush.strokeStyle=`rgba(255,255,255,${alpha})`;brush.lineWidth=lineWidth;brush.stroke(path);}
 function eye(cx,mirror,openness,gx,gy){
@@ -50,14 +51,15 @@ function draw(t){
  document.querySelector('#counter').textContent=`${String(Math.floor(t/60)).padStart(2,'0')}:${String(Math.floor(t%60)).padStart(2,'0')}`;
  document.querySelector('#mode').textContent=paused?'RENDER PAUSED':interactive?'FOLLOWING YOUR GAZE':zoom>1.7?'CINEMATIC CLOSE-UP':'AUTONOMOUS GAZE';
 }
-function frame(now){if(!previous)previous=now;const delta=Math.min((now-previous)/1000,.1);previous=now;if(!paused)elapsed+=delta;if(now-lastPaint>50){draw(elapsed);lastPaint=now;}requestAnimationFrame(frame);}resize();draw(0);requestAnimationFrame(frame);
-function togglePause(){paused=!paused;const b=document.querySelector('#pause');b.innerHTML=paused?'▶ <span>Play</span>':'Ⅱ <span>Pause</span>';b.setAttribute('aria-pressed',String(paused));}
+function frame(now){if(!previous)previous=now;const delta=Math.min((now-previous)/1000,.1);previous=now;if(!document.hidden){if(!paused)elapsed+=delta;if((!paused||dirty)&&now-lastPaint>50){draw(elapsed);lastPaint=now;dirty=false;}}requestAnimationFrame(frame);}resize();draw(0);requestAnimationFrame(frame);
+function togglePause(){paused=!paused;dirty=true;const b=document.querySelector('#pause');b.innerHTML=paused?'▶ <span>Play</span>':'Ⅱ <span>Pause</span>';b.setAttribute('aria-pressed',String(paused));}
 document.querySelector('#pause').onclick=togglePause;
 document.querySelector('#replay').onclick=()=>{elapsed=0;forcedBlink=-10;draw(elapsed);};
-screen.addEventListener('pointermove',e=>{const r=screen.getBoundingClientRect();pointerX=(e.clientX-r.left)/r.width*2-1;pointerY=(e.clientY-r.top)/r.height*2-1;pointerUntil=performance.now()+2200;});
-screen.onclick=()=>{forcedBlink=elapsed;if(paused){paused=false;document.querySelector('#pause').innerHTML='Ⅱ <span>Pause</span>';document.querySelector('#pause').setAttribute('aria-pressed','false');}};
+screen.addEventListener('pointermove',e=>{const r=screen.getBoundingClientRect();pointerX=(e.clientX-r.left)/r.width*2-1;pointerY=(e.clientY-r.top)/r.height*2-1;pointerUntil=performance.now()+2200;dirty=true;});
+screen.onclick=()=>{dirty=true;forcedBlink=elapsed;if(paused){paused=false;document.querySelector('#pause').innerHTML='Ⅱ <span>Pause</span>';document.querySelector('#pause').setAttribute('aria-pressed','false');}};
 document.querySelectorAll('.swatch').forEach(b=>b.onclick=()=>{color=b.dataset.color;document.documentElement.style.setProperty('--ink',color);document.querySelectorAll('.swatch').forEach(s=>{s.classList.toggle('active',s===b);s.setAttribute('aria-pressed',String(s===b));});draw(elapsed);});
 document.querySelector('#cinema').onclick=()=>{const on=document.body.classList.toggle('cinema');document.querySelector('#cinema').setAttribute('aria-pressed',String(on));};
 document.querySelector('#fullscreen').onclick=async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await document.documentElement.requestFullscreen();}catch{document.body.classList.toggle('cinema');}};
 document.addEventListener('keydown',e=>{if(e.code==='Space'&&e.target===document.body){e.preventDefault();togglePause();}if(e.key==='Escape')document.body.classList.remove('cinema');});
 if(reduced){paused=true;document.querySelector('#pause').innerHTML='▶ <span>Play</span>';document.querySelector('#pause').setAttribute('aria-pressed','true');}
+

@@ -21,3 +21,8 @@ The eyes blink automatically and the camera slowly moves into a close-up. Mobile
 In repository Settings → Pages choose Deploy from a branch, then `main` and `/ (root)`, and Save.
 
 Files: `index.html`, `style.css`, `script.js`. The `.openai` folder is only used for local preview and can be omitted on GitHub.
+
+
+## Audit verification
+
+Run `node --test tests/*.test.js` for simulated-canvas behavior checks. See [AUDIT.md](AUDIT.md) for changes, test evidence and remaining visual checks.
