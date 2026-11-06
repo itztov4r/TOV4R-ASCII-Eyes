@@ -59,3 +59,9 @@ body.birthday-revealed .site-shell{animation:reveal-site 1.1s ease both}
 @keyframes reveal-site{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
 @media(max-width:500px){.welcome-card{padding:36px 22px}.welcome-icon{font-size:54px}}
 @media(prefers-reduced-motion:reduce){.welcome-screen,.welcome-icon,body.birthday-revealed .site-shell{animation:none;transition:none}}
+
+/* Reference-video presentation: black backdrop, cake slice and lettering */
+.art-frame{background:#020204!important;border-color:#241b2b;min-height:460px;height:clamp(470px,56vw,620px)}
+.art-frame .frame-vignette{box-shadow:none}
+.intro{padding-bottom:26px}.intro h1{font-family:var(--mono);font-size:clamp(30px,5.4vw,65px);letter-spacing:.08em;font-weight:500}.intro h1 em{font-family:var(--mono);font-style:normal;color:#f6b2d6;letter-spacing:.07em}
+@media(max-width:580px){.art-frame{height:490px}.intro h1{font-size:clamp(25px,7vw,38px)}}
