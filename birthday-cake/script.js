@@ -74,34 +74,35 @@
   }
   function makeCake(){
     points=[];
-    const scale=W<490?.64:1;
-    const n=(x)=>Math.floor(x*scale);
-    cylinder(1.46,-1.11,-.28,n(470),[C.petal,C.coral,C.rose,C.shadow]);
-    ring(1.48,-1.10,n(220),[C.petal,C.cream]);
-    ring(1.47,-.27,n(230),[C.cream,C.frosting,C.rose]);
-    lid(1.43,-.26,n(180),[C.cream,C.rose,C.frosting]);
-    cylinder(1.04,-.26,.55,n(365),[C.rose,C.petal,C.cream,C.violet]);
-    ring(1.06,-.25,n(150),[C.cream,C.frosting]);
-    ring(1.04,.55,n(220),[C.frosting,C.cream,C.rose]);
-    lid(1.01,.57,n(170),[C.cream,C.frosting,C.rose]);
-    for(let i=0;i<n(120);i++){
-      const a=bet(0,Math.PI*2),drip=.06+.15*Math.sin(a*8)**2;
-      dot(Math.cos(a)*1.065,.54-bet(0,drip),Math.sin(a)*1.065*.69,
-        pick([C.cream,C.frosting]),pick(["*","+","o"]));
+    const n=W<490?.7:1;
+    // Single triangular cake slice, inspired by the uploaded ASCII art reference.
+    // Front apex faces the viewer; the back is a wide frosted edge.
+    for(let i=0;i<Math.floor(1700*n);i++){
+      const depth=rand(), width=(1-depth)*1.27+.055;
+      const x=bet(-width,width), z=depth*1.65-.75;
+      const y=bet(-1.25,-.28);
+      const creamLayer=Math.abs(y+.67)<.105 || Math.abs(y+1.08)<.065;
+      const edge=Math.abs(x)>width-.07;
+      const color=creamLayer?pick([C.cream,C.gold,C.frosting]):edge?pick([C.rose,C.petal,C.coral]):pick([C.shadow,C.coral,C.rose,C.cream]);
+      dot(x,y,z,color,pick([":",".","+","*","o"]),bet(.66,1));
     }
-    for(let i=0;i<n(185);i++){
-      let a=bet(0,Math.PI*2),r=rand()>.52?1.46:1.04;
-      dot(Math.cos(a)*(r+.024),r>1.2?bet(-.99,-.38):bet(-.17,.43),
-        Math.sin(a)*(r+.024)*.69,pick([C.gold,C.violet,C.frosting]),pick(["*","+","." ,":"]));
+    for(let i=0;i<Math.floor(800*n);i++){
+      const depth=rand(),width=(1-depth)*1.27+.05;
+      const x=bet(-width,width),z=depth*1.65-.75;
+      const y=-.25+bet(-.065,.065);
+      dot(x,y,z,pick([C.frosting,C.cream,C.rose,C.violet]),pick(["+","o","*","."]));
     }
-    for(const candle of candles){
-      for(let i=0;i<n(70);i++){
-        let a=bet(0,Math.PI*2);
-        dot(candle.x+Math.cos(a)*.062,bet(.61,1.34),candle.z+Math.sin(a)*.042,
-          pick([C.cream,C.frosting,C.rose,C.violet]),pick(["|",":","+"]));
-      }
-      dot(candle.x,1.34,candle.z,C.cream,"|");
+    for(let i=0;i<Math.floor(180*n);i++){
+      const depth=rand(),width=(1-depth)*1.27+.05;
+      const x=rand()>.5?width:-width;
+      dot(x,-.29-bet(0,.18),depth*1.65-.75,pick([C.frosting,C.rose,C.cream]),"*");
     }
+    // One candle in the center of the slice.
+    for(let i=0;i<Math.floor(150*n);i++){
+      const a=bet(0,Math.PI*2);
+      dot(Math.cos(a)*.055,bet(-.16,.72),.04+Math.sin(a)*.045,pick([C.rose,C.coral,C.gold]),"|");
+    }
+    dot(0,.76,.04,C.cream,"|");
   }
   function resize(){
     const rect=canvas.getBoundingClientRect();
@@ -109,7 +110,7 @@
     dpr=Math.min(window.devicePixelRatio||1,2);
     canvas.width=Math.round(W*dpr);canvas.height=Math.round(H*dpr);
     ctx.setTransform(dpr,0,0,dpr,0,0);
-    unit=Math.min(W/4.25,H/4.15);
+    unit=Math.min(W/4.15,H/3.7);
     stars=Array.from({length:W<490?55:115},()=>({
       x:bet(0,W),y:bet(35,H-35),size:bet(.3,1.7),
       phase:bet(0,Math.PI*2),speed:bet(.0003,.0011)
@@ -119,7 +120,7 @@
   function project(x,y,z,yaw){
     let cs=Math.cos(yaw),sn=Math.sin(yaw),xr=x*cs+z*sn,zr=z*cs-x*sn;
     const ds=1+zr*.048;
-    return {x:W*.5+xr*unit*ds,y:H*.535-y*unit*ds+zr*unit*.29,z:zr};
+    return {x:W*.5+xr*unit*ds,y:H*.68-y*unit*ds+zr*unit*.19,z:zr};
   }
   function drawStars(t){
     ctx.textAlign="center";ctx.textBaseline="middle";ctx.font="11px monospace";
@@ -132,7 +133,7 @@
     ctx.globalAlpha=1;
   }
   function drawFloor(){
-    const x=W*.5,y=H*.535+unit*1.3;
+    const x=W*.5,y=H*.68+unit*1.3;
     const grad=ctx.createRadialGradient(x,y,unit*.15,x,y,unit*2.4);
     grad.addColorStop(0,"rgba(250,131,187,.12)");
     grad.addColorStop(1,"rgba(164,76,132,0)");
@@ -148,30 +149,27 @@
   function drawCake(t,yaw){
     const arranged=points.map(q=>({q,p:project(q.x,q.y,q.z,yaw)}));
     arranged.sort((a,b)=>a.p.z-b.p.z);
-    const size=Math.max(8,Math.min(13.5,unit*.09));
-    ctx.font=size+'px "DM Mono",monospace';
-    ctx.textAlign="center";ctx.textBaseline="middle";
-    for(const v of arranged){
-      ctx.globalAlpha=v.q.alpha*(v.p.z>0?1:.72);
-      ctx.fillStyle=v.q.color;
-      ctx.fillText(v.q.char,v.p.x,v.p.y);
-    }
+    const size=Math.max(8,Math.min(13,unit*.09));
+    ctx.font=size+'px "DM Mono",monospace';ctx.textAlign="center";ctx.textBaseline="middle";
+    for(const v of arranged){ctx.globalAlpha=v.q.alpha;ctx.fillStyle=v.q.color;ctx.fillText(v.q.char,v.p.x,v.p.y)}
     ctx.globalAlpha=1;
-    for(const candle of candles){
-      const p=project(candle.x,candle.y,candle.z,yaw);
-      if(lit){
-        const flicker=reduceMotion.matches?1:.91+Math.sin(t*.011+candle.x*8)*.09;
-        ctx.save();ctx.globalAlpha=.85;ctx.shadowColor="#ffb772";ctx.shadowBlur=22*flicker;
-        ctx.fillStyle=C.gold;ctx.font=(size*1.8*flicker)+'px monospace';
-        ctx.fillText("*",p.x,p.y);
-        ctx.font=(size*.93)+'px monospace';ctx.fillStyle="#fff5d0";
-        ctx.fillText("+",p.x,p.y-unit*.095);ctx.restore();
-      }else{
-        ctx.globalAlpha=.28;ctx.fillStyle="#a48da2";ctx.font=size+"px monospace";
-        ctx.fillText("~",p.x+Math.sin(t*.002+candle.x)*5,p.y-7);
-      }
-    }
-    ctx.globalAlpha=1;
+    const p=project(0,.89,.04,yaw);
+    if(lit){
+      const f=reduceMotion.matches?1:1+Math.sin(t*.016)*.11;
+      ctx.save();ctx.shadowColor="#ffb65c";ctx.shadowBlur=24;
+      ctx.fillStyle="#ffe1a0";ctx.font=(size*2.1*f)+"px monospace";ctx.fillText("✦",p.x,p.y);
+      ctx.fillStyle="#fff8df";ctx.font=(size*.9)+"px monospace";ctx.fillText("+",p.x,p.y-12);ctx.restore();
+    }else{ctx.fillStyle="#a48da2";ctx.fillText("~",p.x,p.y)}
+    // Birthday text appears inside the animation, like the reference reel.
+    const heading="HAPPY";const second="BIRTHDAY";
+    const alpha=reduceMotion.matches?1:Math.min(1,Math.max(0,(t-500)/2100));
+    ctx.save();ctx.globalAlpha=alpha;ctx.textAlign="center";
+    const font=Math.min(40,Math.max(18,W*.067));ctx.font="bold "+font+"px monospace";
+    ctx.shadowBlur=13;ctx.shadowColor="#c18b77";ctx.fillStyle="#f5d7b2";
+    ctx.fillText(heading,W*.5,H*.19);
+    ctx.shadowColor="#e6a1cf";ctx.fillStyle="#f2b4d8";
+    ctx.fillText(second,W*.5,H*.19+font*1.08);
+    ctx.restore();
   }
   function sprinkle(count=110,x=W*.5,y=H*.35){
     const colors=[C.rose,C.cream,C.gold,C.violet,C.petal];
@@ -200,7 +198,7 @@
     lastFrame=now;
     ctx.clearRect(0,0,W,H);
     let t=reduceMotion.matches?0:now-start;
-    let yaw=(reduceMotion.matches?.16:Math.sin(t*.00034)*.22)+yawPointer*.38+.16;
+    let yaw=(reduceMotion.matches?0:Math.sin(t*.00024)*.10)+yawPointer*.18;
     drawStars(t);drawFloor();drawCake(t,yaw);drawParticles();
   }
   const clean=(text)=>String(text||"").replace(/\s+/g," ").trim().slice(0,28);
