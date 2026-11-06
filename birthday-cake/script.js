@@ -24,13 +24,15 @@
     const cleaned = String(name || "").replace(/\\s+/g, " ").trim().slice(0, 28);
     if (!cleaned) { welcomeName.focus(); return; }
     experienceStarted = true;
+    start=performance.now();
+    lit=true;blowBtn.disabled=false;particles=[];
     personalize(cleaned);
     document.body.classList.remove("awaiting-name");
     document.body.classList.add("birthday-revealed");
     welcomeScreen.classList.add("is-gone");
     welcomeScreen.setAttribute("aria-hidden", "true");
     window.scrollTo({top: 0, behavior: "instant"});
-    setTimeout(() => { welcomeScreen.hidden = true; sprinkle(130, W*.5, H*.45); }, 850);
+    setTimeout(() => { welcomeScreen.hidden = true; sprinkle(130, W*.5, H*.44); }, 850);
   }
   welcomeForm.addEventListener("submit", (event) => {
     event.preventDefault();
@@ -120,7 +122,7 @@
   function project(x,y,z,yaw){
     let cs=Math.cos(yaw),sn=Math.sin(yaw),xr=x*cs+z*sn,zr=z*cs-x*sn;
     const ds=1+zr*.048;
-    return {x:W*.5+xr*unit*ds,y:H*.68-y*unit*ds+zr*unit*.19,z:zr};
+    return {x:W*.5+xr*unit*ds,y:H*.50-y*unit*ds+zr*unit*.19,z:zr};
   }
   function drawStars(t){
     ctx.textAlign="center";ctx.textBaseline="middle";ctx.font="11px monospace";
@@ -133,7 +135,7 @@
     ctx.globalAlpha=1;
   }
   function drawFloor(){
-    const x=W*.5,y=H*.68+unit*1.3;
+    const x=W*.5,y=H*.50+unit*1.3;
     const grad=ctx.createRadialGradient(x,y,unit*.15,x,y,unit*2.4);
     grad.addColorStop(0,"rgba(250,131,187,.12)");
     grad.addColorStop(1,"rgba(164,76,132,0)");
@@ -147,14 +149,15 @@
     }
   }
   function drawCake(t,yaw){
+    const reveal=reduceMotion.matches?1:Math.min(1,Math.max(0,(t-400)/2400));
     const arranged=points.map(q=>({q,p:project(q.x,q.y,q.z,yaw)}));
     arranged.sort((a,b)=>a.p.z-b.p.z);
     const size=Math.max(8,Math.min(13,unit*.09));
     ctx.font=size+'px "DM Mono",monospace';ctx.textAlign="center";ctx.textBaseline="middle";
-    for(const v of arranged){ctx.globalAlpha=v.q.alpha;ctx.fillStyle=v.q.color;ctx.fillText(v.q.char,v.p.x,v.p.y)}
+    for(const v of arranged){ctx.globalAlpha=v.q.alpha*reveal;ctx.fillStyle=v.q.color;ctx.fillText(v.q.char,v.p.x,v.p.y)}
     ctx.globalAlpha=1;
     const p=project(0,.89,.04,yaw);
-    if(lit){
+    if(lit && reveal>.7){
       const f=reduceMotion.matches?1:1+Math.sin(t*.016)*.11;
       ctx.save();ctx.shadowColor="#ffb65c";ctx.shadowBlur=24;
       ctx.fillStyle="#ffe1a0";ctx.font=(size*2.1*f)+"px monospace";ctx.fillText("✦",p.x,p.y);
@@ -162,7 +165,7 @@
     }else{ctx.fillStyle="#a48da2";ctx.fillText("~",p.x,p.y)}
     // Birthday text appears inside the animation, like the reference reel.
     const heading="HAPPY";const second="BIRTHDAY";
-    const alpha=reduceMotion.matches?1:Math.min(1,Math.max(0,(t-500)/2100));
+    const alpha=reduceMotion.matches?1:Math.min(1,Math.max(0,(t-2200)/1800));
     ctx.save();ctx.globalAlpha=alpha;ctx.textAlign="center";
     const font=Math.min(40,Math.max(18,W*.067));ctx.font="bold "+font+"px monospace";
     ctx.shadowBlur=13;ctx.shadowColor="#c18b77";ctx.fillStyle="#f5d7b2";
@@ -199,7 +202,7 @@
     ctx.clearRect(0,0,W,H);
     let t=reduceMotion.matches?0:now-start;
     let yaw=(reduceMotion.matches?0:Math.sin(t*.00024)*.10)+yawPointer*.18;
-    drawStars(t);drawFloor();drawCake(t,yaw);drawParticles();
+    if(experienceStarted){drawStars(t);drawFloor();drawCake(t,yaw);drawParticles();}
   }
   const clean=(text)=>String(text||"").replace(/\s+/g," ").trim().slice(0,28);
   function personalize(text){
