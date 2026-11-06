@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#090810">
+  <meta name="description" content="A little birthday wish made of pixels. An interactive, animated ASCII birthday cake.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="A Little Wish — ASCII Birthday Cake">
+  <meta property="og:description" content="A birthday wish, written in stars. Make your own and share it.">
+  <title>A Little Wish — ASCII Birthday Cake</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ctext y='.9em' font-size='54'%3E%F0%9F%8E%82%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="./style.css">
+  <script src="./script.js" defer></script>
+</head>
+<body>
+  <div class="ambient ambient-one" aria-hidden="true"></div>
+  <div class="ambient ambient-two" aria-hidden="true"></div>
+  <div class="site-shell">
+    <header class="site-header">
+      <a class="brand" href="./" aria-label="A Little Wish, home"><span class="brand-star" aria-hidden="true">✳</span> a little wish<span class="brand-dot">.</span></a>
+      <span class="header-label"><span class="live-dot"></span> AN INTERACTIVE ASCII EXPERIENCE</span>
+    </header>
+
+    <main>
+      <section class="intro" aria-labelledby="page-title">
+        <div class="kicker"><span class="dash"></span> FOR SOMEONE SPECIAL <span class="dash"></span></div>
+        <h1 id="page-title">Some wishes are<br><em>written in stars.</em></h1>
+        <p>A tiny celebration, made of characters, light, and a little bit of magic.</p>
+      </section>
+
+      <section class="art-frame" aria-label="Animated ASCII birthday cake">
+        <div class="frame-top"><span class="frame-mark"><span class="indicator"></span> LIVE RENDER · ASCII / 3D</span><span>01 — A MOMENT FOR YOU</span></div>
+        <canvas id="asciiCanvas" role="img" aria-label="A softly rotating birthday cake built from hundreds of glowing ASCII characters, with candles and floating stars"></canvas>
+        <div class="frame-vignette" aria-hidden="true"></div>
+        <div class="frame-center" aria-hidden="true"><span>✦</span></div>
+        <div class="frame-bottom">
+          <span>✳ MADE FROM LITTLE THINGS</span>
+          <span>∞ MANY MORE MEMORIES AHEAD</span>
+        </div>
+        <div class="wish-overlay" id="wishOverlay" aria-hidden="true"><div class="wish-overlay-inner"><span class="wish-sparkle">✧ ✦ ✧</span><span id="overlayText">make a wish</span><span class="wish-sparkle small">✧ ✦ ✧</span></div></div>
+      </section>
+
+      <div class="birthday-caption" aria-live="polite">
+        <span class="caption-line">TO A BEAUTIFUL NEW CHAPTER</span>
+        <h2>happy birthday<span class="comma">,</span> <span id="displayName">you</span><span class="period">.</span></h2>
+        <span class="caption-motto">may all the good things find their way to you <span aria-hidden="true">✦</span></span>
+      </div>
+
+      <section class="control-card" aria-label="Personalize your birthday wish">
+        <div class="control-intro">
+          <span class="section-number">01 / MAKE IT PERSONAL</span>
+          <h3>Who are we celebrating?</h3>
+          <p>Give your little wish a name, then make the stars dance.</p>
+        </div>
+        <form id="nameForm" class="name-form">
+          <label for="nameInput">THEIR NAME</label>
+          <div class="name-input-row">
+            <input id="nameInput" name="name" type="text" autocomplete="off" maxlength="28" placeholder="Someone wonderful" aria-describedby="inputHint">
+            <button class="btn btn-outline" type="submit">Set name <span aria-hidden="true">↗</span></button>
+          </div>
+          <span class="field-hint" id="inputHint">The name stays in your browser and in the shareable link.</span>
+        </form>
+        <div class="action-row">
+          <button class="btn btn-primary" id="wishButton" type="button"><span aria-hidden="true">✧</span> Make a wish <span aria-hidden="true">↗</span></button>
+          <button class="btn btn-secondary" id="blowButton" type="button"><span aria-hidden="true">✺</span> Blow candles</button>
+          <button class="btn btn-secondary" id="replayButton" type="button"><span aria-hidden="true">↻</span> Replay</button>
+          <button class="btn btn-secondary" id="shareButton" type="button"><span aria-hidden="true">↗</span> Share</button>
+        </div>
+        <p class="status-text" id="statusMessage" role="status" aria-live="polite">The candles are waiting for your wish.</p>
+      </section>
+    </main>
+    <footer class="site-footer">
+      <span>CRAFTED WITH <span class="footer-star">✳</span> BY TOV4R</span>
+      <span>INSPIRED BY THE ASCII CAKE ART OF <a href="https://www.instagram.com/jin_22ee/" target="_blank" rel="noopener noreferrer">@JIN_22EE</a></span>
+      <span>EST. 2026 — MADE TO SHARE</span>
+    </footer>
+  </div>
+</body>
+</html>
