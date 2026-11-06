@@ -32,7 +32,7 @@
     welcomeScreen.classList.add("is-gone");
     welcomeScreen.setAttribute("aria-hidden", "true");
     window.scrollTo({top: 0, behavior: "instant"});
-    setTimeout(() => { welcomeScreen.hidden = true; sprinkle(130, W*.5, H*.44); }, 850);
+    setTimeout(() => { welcomeScreen.hidden = true; document.getElementById("birthdayStage").scrollIntoView({behavior: reduceMotion.matches ? "instant" : "smooth", block: "center"}); sprinkle(130, W*.5, H*.44); }, 850);
   }
   welcomeForm.addEventListener("submit", (event) => {
     event.preventDefault();
