@@ -15,6 +15,27 @@
   const shareBtn = document.getElementById("shareButton");
   if (!ctx) { status.textContent = "Canvas is not supported on this browser."; return; }
 
+  const welcomeScreen = document.getElementById("welcomeScreen");
+  const welcomeForm = document.getElementById("welcomeForm");
+  const welcomeName = document.getElementById("welcomeName");
+  let experienceStarted = false;
+  function beginExperience(name) {
+    if (experienceStarted) return;
+    const cleaned = String(name || "").replace(/\\s+/g, " ").trim().slice(0, 28);
+    if (!cleaned) { welcomeName.focus(); return; }
+    experienceStarted = true;
+    personalize(cleaned);
+    document.body.classList.remove("awaiting-name");
+    document.body.classList.add("birthday-revealed");
+    welcomeScreen.classList.add("is-gone");
+    welcomeScreen.setAttribute("aria-hidden", "true");
+    window.scrollTo({top: 0, behavior: "instant"});
+    setTimeout(() => { welcomeScreen.hidden = true; sprinkle(130, W*.5, H*.45); }, 850);
+  }
+  welcomeForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    beginExperience(welcomeName.value);
+  });
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
   const C = {
     cream:"#ffe8d0", rose:"#ffc1d2", petal:"#f48dad", coral:"#e48a9d",
@@ -237,7 +258,7 @@
     sprinkle(32,e.clientX-r.left,e.clientY-r.top);
   });
   const initial=new URLSearchParams(window.location.search).get("to");
-  if(initial)personalize(initial);
+  if(initial){ welcomeName.value=clean(initial); personalize(initial); }
   resize();
   if(typeof ResizeObserver!=="undefined")new ResizeObserver(resize).observe(canvas);
   else window.addEventListener("resize",resize,{passive:true});
