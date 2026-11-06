@@ -13,7 +13,20 @@
   <link rel="stylesheet" href="./style.css">
   <script src="./script.js" defer></script>
 </head>
-<body>
+<body class="awaiting-name">
+  <section class="welcome-screen" id="welcomeScreen" aria-labelledby="welcomeTitle">
+    <div class="welcome-glow" aria-hidden="true">✦</div>
+    <form id="welcomeForm" class="welcome-card">
+      <span class="welcome-eyebrow">✦ A LITTLE SURPRISE FOR YOU ✦</span>
+      <div class="welcome-icon" aria-hidden="true">🎂</div>
+      <h1 id="welcomeTitle">What’s your <em>name?</em></h1>
+      <p>Enter your name to unlock a little birthday surprise.</p>
+      <label for="welcomeName">YOUR NAME</label>
+      <input id="welcomeName" type="text" maxlength="28" autocomplete="given-name" placeholder="Type your name here..." required>
+      <button type="submit" class="welcome-start">Start the surprise <span aria-hidden="true">✦</span></button>
+      <span class="welcome-note">Something magical is waiting...</span>
+    </form>
+  </section>
   <div class="ambient ambient-one" aria-hidden="true"></div>
   <div class="ambient ambient-two" aria-hidden="true"></div>
   <div class="site-shell">
